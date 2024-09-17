@@ -6,5 +6,4 @@ plugins=(
   tig
   z
   zsh-autosuggestions
-  zsh-yarn-completions
   )
