@@ -1,0 +1,80 @@
+- name: "Setup codespace"
+  hosts: 127.0.0.1
+  connection: local
+  tasks:
+    - name: Install the latest version of tig
+      package:
+        name:
+          - tig
+        state: present
+
+    - name: Download Oh My ZSH installation script
+      get_url:
+        url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+        dest: /tmp/install_ohmyzsh.sh
+
+    - name: Run Oh My ZSH installation script
+      command: sh /tmp/install_ohmyzsh.sh --unattended
+      register: ohmyzsh_result
+      failed_when: "'FAILED' in ohmyzsh_result.stderr"
+
+    - name: "Fetch ZSH-Autosuggestions"
+      git:
+        repo: https://github.com/zsh-users/zsh-autosuggestions
+        dest: ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+
+    - name: Download Atuin installation script
+      get_url:
+        url: https://setup.atuin.sh
+        dest: /tmp/install_atuin.sh
+
+    - name: Download .zshrc customization
+      get_url:
+        force: true
+        url: https://raw.githubusercontent.com/george-cz/codespaces-auto-setup/main/.zshrc
+        dest: /tmp/.zshrc
+
+    - name: Download ZSH plugins init file
+      get_url:
+        force: true
+        url: https://raw.githubusercontent.com/george-cz/codespaces-auto-setup/main/.zsh_plugins
+        dest: /tmp/.zsh_plugins
+
+    - name: Make sure the .zshrc customizations are present in ~/.zshrc
+      blockinfile:
+        marker: "# {mark} ANSIBLE CUSTOM CONFIG"
+        state: present
+        insertafter: EOF
+        path: ~/.zshrc
+        block: "{{ lookup('file', '/tmp/.zshrc') }}"
+
+    - name: Make sure the ZSH plugins are configured properly in ~/.zshrc
+      blockinfile:
+        marker: "# {mark} ANSIBLE PLUGIN CONFIG"
+        state: present
+        path: ~/.zshrc
+        block: "{{ lookup('file', '/tmp/.zsh_plugins') }}"
+        insertafter: 'plugins=\(git\)'
+
+    - name: Remove the default ZSH plugin initialization
+      lineinfile:
+        path: ~/.zshrc
+        regexp: 'plugins=\(git\)'
+        state: absent
+
+    - name: Run Atuin installation script
+      command: sh /tmp/install_atuin.sh
+      register: atuin_result
+      failed_when: "'FAILED' in atuin_result.stderr"
+
+    - name: Ensure ~/.zsh directory exists
+      file:
+        path: ~/.zsh
+        recurse: true
+        state: directory
+
+    - name: "Download git-completion script"
+      get_url:
+        force: true
+        url: https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash
+        dest: ~/.zsh/git-completion.bash
