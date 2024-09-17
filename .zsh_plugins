@@ -1,0 +1,10 @@
+plugins=(
+  git
+  compleat
+  jsontools
+  last-working-dir
+  tig
+  z
+  zsh-autosuggestions
+  zsh-yarn-completions
+  )
