@@ -53,6 +53,8 @@ fpath=(~/.zsh $fpath)
 
 autoload -Uz compinit && compinit
 
+. "$HOME/.atuin/bin/env"
+
 export ATUIN_NOBIND="true"
 eval "$(atuin init zsh)"
 bindkey '^r' _atuin_search_widget
