@@ -47,8 +47,6 @@ function c {
 
 alias bs="git branch-select"
 
-export PS1="$FG[032]%1d\$(git_prompt_info) \$FG[105]%(!.#.::)%{$reset_color%} "
-
 # Load Git completion
 zstyle ':completion:*:*:git:*' script ~/.zsh/git-completion.bash
 fpath=(~/.zsh $fpath)
