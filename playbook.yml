@@ -3,11 +3,11 @@
   connection: local
   tasks:
     - name: Install the latest version of tig
+      become: true
       package:
         name:
           - tig
         state: present
-        become: true
 
     - name: Download Oh My ZSH installation script
       get_url:
