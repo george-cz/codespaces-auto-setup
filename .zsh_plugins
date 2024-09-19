@@ -1,3 +1,5 @@
+ZSH_THEME="af-magic"
+
 plugins=(
   git
   compleat
